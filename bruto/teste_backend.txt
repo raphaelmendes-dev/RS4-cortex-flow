@@ -1,0 +1,17 @@
+1. IDENTIFICAÇÃO & DATA
+• Data e Hora: 2026-09-15
+• Frente Alvo: [X] LAB  |  [ ] COMMERCE  |  [ ] FREELAS  |  [ ] CLAUDE / SISTEMAS
+
+2. A IDEIA BRUTA (Pensamento Humano)
+Quero criar uma mini API em Python para registrar os logs de execuções dos testes do Claudio Project. A ideia é salvar em um banco SQLite local: o nome do arquivo testado, o tempo de execução de cada agente e a quantidade de caracteres gerados. Quero algo simples, sem ORMs pesados como SQLAlchemy, usando apenas o módulo 'sqlite3' padrão do Python.
+
+3. CONTEXTO & MOTIVAÇÃO
+Precisamos medir a performance do Qwen 2.5 7B na CPU ao longo do tempo para registrar dados reais de métricas (Item 09 do checklist) sem instalar dependências externas.
+
+4. RESTRIÇÕES & LIMITES
+• Custo máximo: R$ 0,00
+• Tempo de execução: 45 minutos
+• Restrição técnica: Apenas Python padrão (stdlib) + SQLite3 local. Zero dependências pip.
+
+5. O RESULTADO ESPERADO
+• Estrutura de tabela SQLite sugerida e script mínimo de inserção em Python.

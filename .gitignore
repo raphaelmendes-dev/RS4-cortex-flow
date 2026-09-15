@@ -1,0 +1,22 @@
+# Python / Bytecode / Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Isolamento da Biblioteca Privada e Ideias Brutas Locais
+# Mantém apenas os arquivos de teste genéricos
+bruto/*
+!bruto/teste_frontend.txt
+!bruto/teste_backend.txt
+
+biblioteca/*
+!biblioteca/README.md
+!biblioteca/Refinado_20260914_192107.md
+
+# Logs e arquivos de sistema/IDE
+logs/*.log
+.vscode/
+.DS_Store
+Thumbs.db
+contexto_global.txt

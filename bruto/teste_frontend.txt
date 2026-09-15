@@ -1,0 +1,17 @@
+1. IDENTIFICAÇÃO & DATA
+• Data e Hora: 2026-09-14
+• Frente Alvo: [X] LAB  |  [ ] COMMERCE  |  [ ] FREELAS  |  [ ] CLAUDE / SISTEMAS
+
+2. A IDEIA BRUTA (Pensamento Humano)
+Quero criar uma landing page simples, em uma única página HTML, para apresentar a filosofia do RS4 Machine. O conceito central é a metáfora do "átomo como um organismo vivo". Quero algo visualmente limpo, responsivo para celular, com efeitos sutis em CSS nativo para demonstrar dinamismo sem pesar no carregamento.
+
+3. CONTEXTO & MOTIVAÇÃO
+Preciso de uma página de manifesto rápida para registrar no GitHub e demonstrar a evolução do design system do laboratório, sem gastar tempo com frameworks pesados como React ou Vue.
+
+4. RESTRIÇÕES & LIMITES
+• Custo máximo: R$ 0,00
+• Tempo de execução: 45 minutos
+• Restrição técnica: HTML/CSS nativo, sem bibliotecas pesadas de terceiros, leve para rodar em celulares fracos.
+
+5. O RESULTADO ESPERADO
+• Plano de Ação Mínimo e estrutura HTML/CSS sugerida.
