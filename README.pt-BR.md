@@ -1,9 +1,9 @@
 <div align="center">
 <img src="assets/Rs4Machine.png" alt="Logo Rs4Machine" width="380" />
 
-# 🧠 Projeto Claudio — Rs4Machine
+# 🧠 RS4-cortex-flow
 
-**Sistema de Aumento Intelectual & Refino Multiagente v1.0.0**
+**Sistema de Aumento Intelectual & Refino Multiagente v1.0.1**
 
 Um pipeline multiagente determinístico, 100% local e de custo zero, que transforma pensamentos humanos brutos em briefings estruturados para tomada de decisão.
 
@@ -27,6 +27,7 @@ Um pipeline multiagente determinístico, 100% local e de custo zero, que transfo
 - [Estrutura de Diretórios do Projeto](#-estrutura-de-diretórios-do-projeto)
 - [Performance Empírica & Baseline](#-performance-empírica--baseline)
 - [Executando Localmente](#-executando-localmente)
+- [🐳 Executando via Docker](#-executando-via-docker)
 - [Módulo de Contexto Global](#-módulo-de-contexto-global)
 - [Licença](#-licença)
 - [Contato Corporativo & Pesquisa](#-contato-corporativo--pesquisa)
@@ -35,7 +36,7 @@ Um pipeline multiagente determinístico, 100% local e de custo zero, que transfo
 
 ## 🎯 Visão Geral
 
-O **Projeto Claudio (v1.0)** é um motor de aumento intelectual offline construído sob o framework experimental do **RS4 Lab** (*Experiment-005*). Projetado para eliminar a fadiga cognitiva e a complexidade prematura, ele ingere "pensamentos brutos" não estruturados e os conduz por uma cadeia de raciocínio de IA local determinística em 4 estágios, alimentada pelo Ollama (`qwen2.5:7b`).
+O **RS4-cortex-flow (v1.0.1)** — anteriormente **Projeto Claudio** — é um motor de aumento intelectual offline construído sob o framework experimental do **RS4 Lab** (*Experiment-005*). Projetado para eliminar a fadiga cognitiva e a complexidade prematura, ele ingere "pensamentos brutos" não estruturados e os conduz por uma cadeia de raciocínio de IA local determinística em 4 estágios, alimentada pelo Ollama (`qwen2.5:7b`).
 
 O sistema gera relatórios Markdown padronizados, enriquecidos com metadados de Front-Matter, automaticamente categorizados em frentes operacionais dedicadas (`LAB`, `COMMERCE`, `FREELAS` ou `SISTEMAS`) para uma biblioteca pessoal de conhecimento.
 
@@ -43,9 +44,9 @@ O sistema gera relatórios Markdown padronizados, enriquecidos com metadados de 
 
 ## ⚡ Princípios-Chave de Engenharia
 
-- **100% Offline & Custo R$ 0,00:** executa estritamente de forma local via API REST do Ollama (`http://localhost:11434`), garantindo privacidade de dados e zero custos de API.
+- **100% Offline & Custo R$ 0,00:** executa estritamente de forma local via API REST do Ollama (`http://localhost:11434`, ou `host.docker.internal` quando usando a imagem Docker Compose), garantindo privacidade de dados e zero custos de API.
 - **Proteção Determinística de Recursos:** chama um agente por vez para evitar saturação de RAM/VRAM em hardware host padrão.
-- **Chunking Controlado & Anti-Loop:** contexto limitado a 1.500 caracteres e respostas limitadas a 256 tokens máximos para preservar a estabilidade de execução (~38s–62s por agente).
+- **Chunking Controlado & Anti-Loop:** contexto limitado a 1.500 caracteres e respostas limitadas a **1.024 tokens máximos** (`num_predict`) com **timeout HTTP de 240s (4 minutos) por requisição** para que cada agente entregue respostas completas, sem cortes, preservando a estabilidade de execução.
 - **Injeção Graciosa de Contexto:** integra dinamicamente o `contexto_global.txt` quando presente, ou cai, sem fricção, para o modo isolado.
 - **Resiliência de Console Multiplataforma:** reconfiguração padronizada de stdout para UTF-8 em terminais Windows legados (cp1252).
 
@@ -75,7 +76,7 @@ O sistema gera relatórios Markdown padronizados, enriquecidos com metadados de 
 
 ## 📂 Estrutura de Diretórios do Projeto
 
-Claudio-Project.v1/
+RS4-cortex-flow/
 ├── bruto/                      → Pasta de entrada para arquivos de pensamento bruto (.txt)
 │   ├── teste_frontend.txt      → Exemplo de entrada de UI/UX
 │   └── teste_backend.txt       → Exemplo de entrada de Arquitetura
@@ -89,6 +90,8 @@ Claudio-Project.v1/
 ├── logs/                       → Logs de execução locais (ignorados pelo git)
 ├── assets/                     → Assets visuais do projeto & provas de benchmark
 ├── orquestrador_claudio.py     → Script orquestrador principal em Python
+├── Dockerfile                  → Imagem leve `python:3.10-slim` do orquestrador
+├── docker-compose.yml          → Serviço Docker Compose (volumes + acesso ao Ollama do host)
 ├── BASELINE.MD                 → Tempos de execução medidos, footprint de RAM & benchmarks de CPU
 ├── LICENSE                     → Arquivo da Licença MIT
 ├── .gitignore                  → Regras estritas de segurança & higiene
@@ -103,13 +106,13 @@ Testado em arquitetura de CPU local rodando Ollama com `qwen2.5:7b`:
 
 | Etapa / Agente | Tempo Médio de Resposta | Footprint de RAM | Limite de Tokens de Saída | Status |
 |---|---|---|---|---|
-| **Agente 1 — Mapeador Estrutural** | ~37,9s | ~5,2 GB | 256 tokens | ✅ Operacional |
-| **Agente 2 — Tech Scout** | ~48,9s | ~5,4 GB | 256 tokens | ✅ Operacional |
-| **Agente 3 — Crítico Ácido** | ~62,0s | ~5,5 GB | 256 tokens | ✅ Operacional |
-| **Agente 4 — Sintetizador** | ~62,0s | ~5,5 GB | 256 tokens | ✅ Operacional |
-| **Execução Total do Pipeline** | **~219,7s** | **Máx. 5,5 GB** | **1.024 tokens no total** | **Determinística & Estável** |
+| **Agente 1 — Mapeador Estrutural** | ~37,9s | ~5,2 GB | 1.024 tokens | ✅ Operacional |
+| **Agente 2 — Tech Scout** | ~48,9s | ~5,4 GB | 1.024 tokens | ✅ Operacional |
+| **Agente 3 — Crítico Ácido** | ~62,0s | ~5,5 GB | 1.024 tokens | ✅ Operacional |
+| **Agente 4 — Sintetizador** | ~62,0s | ~5,5 GB | 1.024 tokens | ✅ Operacional |
+| **Execução Total do Pipeline** | **~219,7s** | **Máx. 5,5 GB** | **4.096 tokens (4 × 1.024)** | **Determinística & Estável** |
 
-Para gráficos detalhados de utilização de recursos de hardware e especificações de ambiente, consulte [BASELINE.MD](./BASELINE.MD).
+> ⏱️ Os tempos acima correspondem à **linha de base v1.0.0** (medida com o cap de 256 tokens). A partir da **v1.0.1**, cada agente pode gerar até **1.024 tokens** (4.096 no pipeline completo) dentro de um **timeout de 240s por requisição**, garantindo respostas completas sem cortes. Para gráficos detalhados de utilização de recursos de hardware e especificações de ambiente, consulte [BASELINE.MD](./BASELINE.MD).
 
 ---
 
@@ -131,6 +134,26 @@ python orquestrador_claudio.py teste_frontend.txt
 ```
 
 O orquestrador executará os 4 agentes sequencialmente e salvará o relatório final em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+
+## 🐳 Executando via Docker
+
+O repositório inclui uma pilha oficial de Docker Compose (`Dockerfile` + `docker-compose.yml`) que executa o orquestrador **isolado em um container** enquanto acessa a **instância do Ollama rodando na máquina hospedeira** através de `host.docker.internal` (o `extra_hosts` já está configurado no Compose, incluindo hosts Linux). As pastas locais `./bruto`, `./agentes` e `./biblioteca` são montadas como volumes.
+
+### 1. Pré-requisitos
+- [Docker](https://www.docker.com/) com Docker Compose v2
+- [Ollama](https://ollama.com/) rodando no host com `qwen2.5:7b` baixado:
+
+  ```bash
+  ollama pull qwen2.5:7b
+  ```
+
+### 2. Execução
+
+```bash
+docker compose run --rm claudio-project python orquestrador_claudio.py teste_frontend.txt
+```
+
+Coloque seu arquivo `.txt` bruto dentro de `bruto/` e o relatório final é salvo diretamente em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` na sua máquina (através do volume montado).
 
 ## 🌐 Módulo de Contexto Global
 
@@ -155,4 +178,4 @@ Fundador / Engenheiro Chefe: Raphael Mendes
 
 🏢 LinkedIn Empresa: Rs4Machine Lab
 
-Projeto Claudio v1.0.0 — Setembro de 2026
+RS4-cortex-flow v1.0.1 — Setembro de 2026

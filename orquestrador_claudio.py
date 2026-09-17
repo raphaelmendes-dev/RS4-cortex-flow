@@ -22,14 +22,17 @@ except (AttributeError, ValueError):
 # ==============================================================================
 # CONFIGURAÇÕES MESTRES & SEGURANÇA (RS4 MACHINE)
 # ==============================================================================
-OLLAMA_URL = "http://localhost:11434/api/generate"
+# OLLAMA_URL lida da variável de ambiente: no Docker o compose injeta
+# 'http://host.docker.internal:11434/api/generate' para alcançar o Ollama da
+# máquina hospedeira. Localmente mantém o fallback para localhost.
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 MODELO = "qwen2.5:7b"  # Modelo de 7B confirmado via `ollama list` na v1
-MAX_TOKENS_POR_CHUNK = 256  # Limite rígido de tokens por resposta (num_predict).
-                             # Ajustado de 512->256: CPU mede ~6,2 tok/s, logo 256 tokens
-                             # levam ~41s (bem dentro do timeout de 90s). Segue filosofia
-                             # RS4: respostas curtas, previsíveis e sem estourar memória.
+MAX_TOKENS_POR_CHUNK = 1024  # num_predict: respostas completas, sem cortar texto.
+                             # Ajustado de 256->1024: cada agente pode concluir a
+                             # síntese integral da resposta (7B cabe 1024 tokens).
 MAX_CARACTERES_HISTORICO = 1500  # Teto do histórico/contexto por chamada (chunking)
-TIMEOUT_SEGUNDOS = 90  # Timeout explícito: evita loops infinitos e travamento de memória
+TIMEOUT_SEGUNDOS = 240  # Timeout explícito de 4 min/chamada: cobre execuções mais
+                        # longas (7B em CPU) sem travar loops infinitos.
 
 
 def chamar_ollama_seguro(prompt_sistema, entrada_usuario):
@@ -147,7 +150,7 @@ def carregar_contexto_global():
 
 
 def executar_cadeia_claudio(arquivo_ideia_bruta):
-    print(f"🚀 Iniciando Claudio Project (Modelo: {MODELO})...")
+    print(f"🚀 Iniciando RS4-cortex-flow (Modelo: {MODELO})...")
 
     # 1. Carregar Entrada e System Prompts
     caminho_bruto = os.path.join("bruto", arquivo_ideia_bruta)
@@ -207,7 +210,7 @@ def executar_cadeia_claudio(arquivo_ideia_bruta):
     frente_alvo = extrair_frente_alvo(ideia_bruta)
 
     relatorio_md = f"""---
-PROJETO: Claudio Project (v1.0)
+PROJETO: RS4-cortex-flow (v1.0.1)
 DATA_EXECUCAO: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 MODELO_USADO: {MODELO}
 FRENTE_ALVO: {frente_alvo}
@@ -215,7 +218,7 @@ TAGS: #rs4machine #claudio-project #refino-multiagente #conhecimento-local
 STATUS: Refinado (Aguardando Decisão Humana)
 ---
 
-# RELATÓRIO DE REFINO — CLAUDIO PROJECT
+# RELATÓRIO DE REFINO — RS4-CORTEX-FLOW
 
 ---
 ## 📄 IDEIA BRUTA

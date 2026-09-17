@@ -1,0 +1,32 @@
+# ==============================================================================
+# RS4-cortex-flow (Claudio Project) — docker-compose.yml
+# Isola o orquestrador Python e conecta ao Ollama da MÁQUINA HOSPEDEIRA.
+#
+# Como rodar:
+#   docker compose run --rm claudio-project \
+#     python orquestrador_claudio.py teste_frontend.txt
+#
+# Requisitos no host:
+#   1. Ollama instalado e rodando (ollama serve / Docker Desktop com extensão).
+#   2. Modelo baixado: `ollama pull qwen2.5:7b`
+# ==============================================================================
+services:
+  claudio-project:
+    build: .
+    container_name: claudio-project
+    # Os caminhos relativos do script (bruto/, agentes/, biblioteca/) resolvem
+    # a partir do WORKDIR /app definido no Dockerfile.
+    working_dir: /app
+    volumes:
+      - ./bruto:/app/bruto
+      - ./agentes:/app/agentes
+      - ./biblioteca:/app/biblioteca
+    environment:
+      # host.docker.internal = endereço da máquina hospedeira dentro do container.
+      - OLLAMA_URL=http://host.docker.internal:11434/api/generate
+    extra_hosts:
+      # Necessário no Linux; no Windows/Mac o Docker Desktop já injeta este
+      # alias, e a entrada extra com host-gateway garante o mapeamento em
+      # qualquer plataforma.
+      - "host.docker.internal:host-gateway"
+    command: ["python", "orquestrador_claudio.py", "teste_frontend.txt"]

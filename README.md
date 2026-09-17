@@ -1,9 +1,9 @@
 <div align="center">
 <img src="assets/Rs4Machine.png" alt="Rs4Machine Logo" width="380" />
 
-# 🧠 Claudio Project — Rs4Machine
+# 🧠 RS4-cortex-flow
 
-**Intellectual Augmentation & Multi-Agent Refinement System v1.0.0**
+**Intellectual Augmentation & Multi-Agent Refinement Orchestrator v1.0.1**
 
 A 100% local, zero-cost deterministic multi-agent pipeline that transforms raw human thoughts into structured decision-making briefs.
 
@@ -27,6 +27,7 @@ A 100% local, zero-cost deterministic multi-agent pipeline that transforms raw h
 - [Project Directory Structure](#-project-directory-structure)
 - [Empirical Performance & Baseline](#-empirical-performance--baseline)
 - [Running Locally](#-running-locally)
+- [🐳 Running via Docker](#-running-via-docker)
 - [Global Context Module](#-global-context-module)
 - [License](#-license)
 - [Corporate & Research Contact](#-corporate--research-contact)
@@ -35,7 +36,7 @@ A 100% local, zero-cost deterministic multi-agent pipeline that transforms raw h
 
 ## 🎯 Overview
 
-**Claudio Project (v1.0)** is an offline intellectual augmentation engine built under the **RS4 Lab** experiment framework (*Experiment-005*). Designed to eliminate cognitive fatigue and premature complexity, it ingests unstructured "raw thoughts" and passes them through a deterministic 4-stage local AI reasoning chain powered by Ollama (`qwen2.5:7b`).
+**RS4-cortex-flow (v1.0.1)** — formerly the **Claudio Project** — is an offline intellectual augmentation engine built under the **RS4 Lab** experiment framework (*Experiment-005*). Designed to eliminate cognitive fatigue and premature complexity, it ingests unstructured "raw thoughts" and passes them through a deterministic 4-stage local AI reasoning chain powered by Ollama (`qwen2.5:7b`).
 
 The system produces standardized Markdown reports enriched with Front-Matter metadata, automatically categorized into dedicated operational fronts (`LAB`, `COMMERCE`, `FREELAS`, or `SISTEMAS`) for a personal knowledge library.
 
@@ -43,9 +44,9 @@ The system produces standardized Markdown reports enriched with Front-Matter met
 
 ## ⚡ Key Engineering Principles
 
-- **100% Offline & $0.00 Cost:** Runs strictly locally via Ollama REST API (`http://localhost:11434`), guaranteeing data privacy and zero API bills.
+- **100% Offline & $0.00 Cost:** Runs strictly locally via the Ollama REST API (`http://localhost:11434`, or `host.docker.internal` when using the Docker Compose image), guaranteeing data privacy and zero API bills.
 - **Deterministic Resource Protection:** Calls one agent at a time to prevent RAM/VRAM saturation on standard host hardware.
-- **Controlled Chunking & Anti-Looping:** Context capped at 1,500 characters and responses bounded to 256 max tokens to preserve execution stability (~38s–62s per agent).
+- **Controlled Chunking & Anti-Looping:** Context capped at 1,500 characters and responses bounded to **1,024 max tokens** (`num_predict`) with a **240s (4 min) per-request HTTP timeout** so every agent delivers complete, uncut answers while keeping execution stable.
 - **Graceful Context Injection:** Dynamically integrates `contexto_global.txt` when present, or seamlessly defaults to isolated mode.
 - **Cross-Platform Console Resilience:** Standardized UTF-8 stdout re-configuration for legacy Windows terminals (cp1252).
 
@@ -75,7 +76,7 @@ The system produces standardized Markdown reports enriched with Front-Matter met
 
 ## 📂 Project Directory Structure
 
-Claudio-Project.v1/
+RS4-cortex-flow/
 ├── bruto/                      → Input folder for raw thought files (.txt)
 │   ├── teste_frontend.txt      → Sample UI/UX input
 │   └── teste_backend.txt       → Sample Architecture input
@@ -89,6 +90,8 @@ Claudio-Project.v1/
 ├── logs/                       → Local execution logs (git-ignored)
 ├── assets/                     → Project visual assets & benchmark proofs
 ├── orquestrador_claudio.py     → Core Python Orchestrator script
+├── Dockerfile                  → Lightweight `python:3.10-slim` Orchestrator image
+├── docker-compose.yml          → Docker Compose service (volumes + host Ollama access)
 ├── BASELINE.MD                 → Measured execution times, RAM footprint & CPU benchmarks
 ├── LICENSE                     → MIT License file
 ├── .gitignore                  → Strict security & hygiene rules
@@ -103,13 +106,13 @@ Tested on local CPU architecture running Ollama with `qwen2.5:7b`:
 
 | Stage / Agent | Avg Response Time | RAM Footprint | Output Token Cap | Status |
 |---|---|---|---|---|
-| **Agent 1 — Structural Mapper** | ~37.9s | ~5.2 GB | 256 tokens | ✅ Operational |
-| **Agent 2 — Tech Scout** | ~48.9s | ~5.4 GB | 256 tokens | ✅ Operational |
-| **Agent 3 — Acid Critic** | ~62.0s | ~5.5 GB | 256 tokens | ✅ Operational |
-| **Agent 4 — Synthesizer** | ~62.0s | ~5.5 GB | 256 tokens | ✅ Operational |
-| **Total Pipeline Run** | **~219.7s** | **Max 5.5 GB** | **1,024 tokens total** | **Deterministic & Stable** |
+| **Agent 1 — Structural Mapper** | ~37.9s | ~5.2 GB | 1,024 tokens | ✅ Operational |
+| **Agent 2 — Tech Scout** | ~48.9s | ~5.4 GB | 1,024 tokens | ✅ Operational |
+| **Agent 3 — Acid Critic** | ~62.0s | ~5.5 GB | 1,024 tokens | ✅ Operational |
+| **Agent 4 — Synthesizer** | ~62.0s | ~5.5 GB | 1,024 tokens | ✅ Operational |
+| **Total Pipeline Run** | **~219.7s** | **Max 5.5 GB** | **4,096 tokens (4 × 1,024)** | **Deterministic & Stable** |
 
-For detailed hardware resource utilization graphs and environment specifications, check [BASELINE.MD](./BASELINE.MD).
+> ⏱️ Response times above are the **v1.0.0 baseline** (measured with the 256-token cap). Starting at **v1.0.1**, each agent can generate up to **1,024 tokens** (4,096 across the pipeline) within a **240s per-request timeout**, guaranteeing complete, uncut answers. For detailed hardware resource utilization graphs and environment specifications, check [BASELINE.MD](./BASELINE.MD).
 
 ---
 
@@ -131,6 +134,26 @@ python orquestrador_claudio.py teste_frontend.txt
 ```
 
 The orchestrator will execute the 4 agents sequentially and save the final report inside `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+
+## 🐳 Running via Docker
+
+The repository ships with an official Docker Compose stack (`Dockerfile` + `docker-compose.yml`) that runs the orchestrator **isolated in a container** while reaching the **Ollama instance running on your host machine** through `host.docker.internal` (`extra_hosts` is configured in the Compose file for Linux hosts). The local folders `./bruto`, `./agentes` and `./biblioteca` are bind-mounted as volumes.
+
+### 1. Prerequisites
+- [Docker](https://www.docker.com/) with Docker Compose v2
+- [Ollama](https://ollama.com/) running on the host with `qwen2.5:7b` downloaded:
+
+  ```bash
+  ollama pull qwen2.5:7b
+  ```
+
+### 2. Execution
+
+```bash
+docker compose run --rm claudio-project python orquestrador_claudio.py teste_frontend.txt
+```
+
+Place your raw `.txt` input inside `bruto/` and the final report is saved directly to `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` on your machine (through the bind-mounted volume).
 
 ## 🌐 Global Context Module
 
@@ -155,4 +178,4 @@ Founder / Lead Engineer: Raphael Mendes
 
 🏢 LinkedIn Company: RS4Machine Lab
 
-Claudio Project v1.0.0 — September 2026
+RS4-cortex-flow v1.0.1 — September 2026
