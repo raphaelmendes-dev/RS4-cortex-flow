@@ -1,17 +1,17 @@
 <div align="center">
 <img src="assets/Rs4Machine.png" alt="Logo Rs4Machine" width="380" />
 
-# 🧠 RS4-cortex-flow
+# 🧠 RS4-cortex-flow — Rs4Machine
 
-**Sistema de Aumento Intelectual & Refino Multiagente v1.0.1**
+**Pipeline local de aprimoramento intelectual e refinamento multiagente**
 
-Um pipeline multiagente determinístico, 100% local e de custo zero, que transforma pensamentos humanos brutos em briefings estruturados para tomada de decisão.
+Um fluxo determinístico e totalmente local para transformar pensamento bruto em briefings estruturados para tomada de decisão, com controle explícito de contexto, execução e rastreabilidade.
 
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github)](https://github.com/raphaelmendes-dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-Perfil-181717?style=for-the-badge&logo=github)](https://github.com/raphaelmendes-dev)
+[![License](https://img.shields.io/badge/Licença-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org)
-[![Ollama](https://img.shields.io/badge/Ollama-Qwen2.5%3A7b-black.svg?style=for-the-badge)](https://ollama.com)
-[![Baseline Metrics](https://img.shields.io/badge/📊-Baseline%20Report-informational?style=for-the-badge)](BASELINE.MD)
+[![Ollama](https://img.shields.io/badge/Ollama-IA%20Local-black.svg?style=for-the-badge)](https://ollama.com)
+[![Baseline Metrics](https://img.shields.io/badge/📊-Relat%C3%B3rio%20Base-informational?style=for-the-badge)](BASELINE.MD)
 
 [🇺🇸 English](README.md) · **🇧🇷 Português do Brasil (este arquivo)**
 
@@ -22,87 +22,91 @@ Um pipeline multiagente determinístico, 100% local e de custo zero, que transfo
 ## 📑 Sumário
 
 - [Visão Geral](#-visão-geral)
-- [Princípios-Chave de Engenharia](#-princípios-chave-de-engenharia)
+- [Princípios de Engenharia](#-princípios-de-engenharia)
 - [Arquitetura Sequencial Multiagente](#-arquitetura-sequencial-multiagente)
-- [Estrutura de Diretórios do Projeto](#-estrutura-de-diretórios-do-projeto)
+- [Estrutura de Diretórios](#-estrutura-de-diretórios)
 - [Performance Empírica & Baseline](#-performance-empírica--baseline)
 - [Executando Localmente](#-executando-localmente)
-- [🐳 Executando via Docker](#-executando-via-docker)
+- [Executando via Docker](#-executando-via-docker)
 - [Módulo de Contexto Global](#-módulo-de-contexto-global)
 - [Licença](#-licença)
-- [Contato Corporativo & Pesquisa](#-contato-corporativo--pesquisa)
+- [Contato](#-contato)
 
 ---
 
 ## 🎯 Visão Geral
 
-O **RS4-cortex-flow (v1.0.1)** — anteriormente **Projeto Claudio** — é um motor de aumento intelectual offline construído sob o framework experimental do **RS4 Lab** (*Experiment-005*). Projetado para eliminar a fadiga cognitiva e a complexidade prematura, ele ingere "pensamentos brutos" não estruturados e os conduz por uma cadeia de raciocínio de IA local determinística em 4 estágios, alimentada pelo Ollama (`qwen2.5:7b`).
+O **RS4-cortex-flow** é um projeto de orquestração multiagente local desenvolvido pela **Rs4Machine** dentro do framework experimental do **RS4 Lab**. Ele transforma entradas humanas brutas em artefatos estruturados usando execução sequencial de agentes com limites explícitos de contexto e tempo.
 
-O sistema gera relatórios Markdown padronizados, enriquecidos com metadados de Front-Matter, automaticamente categorizados em frentes operacionais dedicadas (`LAB`, `COMMERCE`, `FREELAS` ou `SISTEMAS`) para uma biblioteca pessoal de conhecimento.
+O sistema é desenhado para reprodutibilidade, controle de custo e supervisão humana. Ele busca reduzir raciocínio ruidoso, limitar janelas de contexto e manter saídas rastreáveis.
+
+**Posicionamento oficial:** Engenheiro de Sistemas de IA focado em arquiteturas híbridas (LLM + lógica determinística) para eliminar alucinações e garantir auditabilidade em produção.
 
 ---
 
-## ⚡ Princípios-Chave de Engenharia
+## ⚡ Princípios de Engenharia
 
-- **100% Offline & Custo R$ 0,00:** executa estritamente de forma local via API REST do Ollama (`http://localhost:11434`, ou `host.docker.internal` quando usando a imagem Docker Compose), garantindo privacidade de dados e zero custos de API.
-- **Proteção Determinística de Recursos:** chama um agente por vez para evitar saturação de RAM/VRAM em hardware host padrão.
-- **Chunking Controlado & Anti-Loop:** contexto limitado a 1.500 caracteres e respostas limitadas a **1.024 tokens máximos** (`num_predict`) com **timeout HTTP de 240s (4 minutos) por requisição** para que cada agente entregue respostas completas, sem cortes, preservando a estabilidade de execução.
-- **Injeção Graciosa de Contexto:** integra dinamicamente o `contexto_global.txt` quando presente, ou cai, sem fricção, para o modo isolado.
-- **Resiliência de Console Multiplataforma:** reconfiguração padronizada de stdout para UTF-8 em terminais Windows legados (cp1252).
+- **100% Local & Zero Custo** — Executa estritamente em infraestrutura local via API REST do Ollama, sem dependência de nuvem e com proteção de dados sensíveis.
+- **Proteção Determinística de Recursos** — Um agente é acionado por vez para evitar saturação de RAM/VRAM em hardware padrão.
+- **Chunking Controlado & Anti-Loop** — O contexto é limitado e as saídas são restringidas para evitar geração descontrolada.
+- **Injeção Graciosa de Contexto** — `contexto_global.txt` é injetado quando presente; caso contrário, o sistema opera em modo isolado.
+- **Resiliência de Console Multiplataforma** — Tratamento padronizado de saída UTF-8 para terminais Windows legados.
 
 ---
 
 ## 🏗️ Arquitetura Sequencial Multiagente
 
+```text
 [ Entrada do Pensamento Bruto (bruto/) ]
 │
 ▼
-[ AGENTE 1: Mapeador Estrutural ] ──> Decompõe o texto bruto em Fatos, Hipóteses & Riscos
+[ AGENTE 1: Mapeador Estrutural ] → Decompõe o texto bruto em Fatos, Hipóteses e Riscos
 │
 ▼
-[ AGENTE 2: Tech Scout ]        ──> Avalia stacks tecnológicas locais 2026 & viabilidade
+[ AGENTE 2: Tech Scout ]        → Avalia stacks locais e viabilidade
 │
 ▼
-[ AGENTE 3: Crítico Ácido ]     ──> Identifica complexidade prematura & falácias lógicas
+[ AGENTE 3: Crítico Ácido ]     → Identifica complexidade prematura e falácias lógicas
 │
 ▼
-[ AGENTE 4: Sintetizador ]      ──> Gera o Front-Matter YAML & o "Menor Próximo Passo"
+[ AGENTE 4: Sintetizador ]      → Gera front matter YAML e o próximo menor passo
 │
 ▼
 [ Base de Conhecimento Estruturada (biblioteca/Refinado_YYYYMMDD_HHMMSS.md) ]
-
+```
 
 ---
 
-## 📂 Estrutura de Diretórios do Projeto
+## 📂 Estrutura de Diretórios
 
+```text
 RS4-cortex-flow/
-├── bruto/                      → Pasta de entrada para arquivos de pensamento bruto (.txt)
-│   ├── teste_frontend.txt      → Exemplo de entrada de UI/UX
-│   └── teste_backend.txt       → Exemplo de entrada de Arquitetura
-├── agentes/                    → Prompts de sistema dos 4 agentes especializados
-│   ├── agente1_mapeador.txt    → Prompt do Mapeador Estrutural
-│   ├── agente2_techscout.txt   → Prompt do Tech Scout
-│   ├── agente3_critico.txt     → Prompt do Crítico Ácido
-│   └── agente4_sintetizador.txt → Prompt do Sintetizador Final
-├── biblioteca/                 → Pasta de saída da Base de Conhecimento
-│   └── README.md               → Documentação da biblioteca
-├── logs/                       → Logs de execução locais (ignorados pelo git)
-├── assets/                     → Assets visuais do projeto & provas de benchmark
-├── orquestrador_claudio.py     → Script orquestrador principal em Python
-├── Dockerfile                  → Imagem leve `python:3.10-slim` do orquestrador
-├── docker-compose.yml          → Serviço Docker Compose (volumes + acesso ao Ollama do host)
-├── BASELINE.MD                 → Tempos de execução medidos, footprint de RAM & benchmarks de CPU
-├── LICENSE                     → Arquivo da Licença MIT
-├── .gitignore                  → Regras estritas de segurança & higiene
+├── bruto/                      → Entradas brutas (.txt)
+│   ├── teste_frontend.txt
+│   └── teste_backend.txt
+├── agentes/                    → Prompts dos 4 agentes especializados
+│   ├── agente1_mapeador.txt
+│   ├── agente2_techscout.txt
+│   ├── agente3_critico.txt
+│   └── agente4_sintetizador.txt
+├── biblioteca/                 → Saída da base de conhecimento
+│   └── README.md
+├── logs/                       → Logs locais (ignorados pelo git)
+├── assets/                     → Visual do projeto e provas de benchmark
+├── orquestrador_claudio.py     → Script principal do orquestrador
+├── Dockerfile                  → Imagem leve do orquestrador em Python
+├── docker-compose.yml          → Stack Docker Compose para Ollama local
+├── BASELINE.MD                 → Métricas de runtime, RAM e CPU
+├── LICENSE                     → Arquivo de licença MIT
+├── .gitignore                  → Regras de segurança e higiene
 └── README.md                   → Documentação principal
-
+```
 
 ---
 
 ## 📊 Performance Empírica & Baseline
 
-Testado em arquitetura de CPU local rodando Ollama com `qwen2.5:7b`:
+Medido em arquitetura local de CPU com Ollama + `qwen2.5:7b`:
 
 | Etapa / Agente | Tempo Médio de Resposta | Footprint de RAM | Limite de Tokens de Saída | Status |
 |---|---|---|---|---|
@@ -110,42 +114,47 @@ Testado em arquitetura de CPU local rodando Ollama com `qwen2.5:7b`:
 | **Agente 2 — Tech Scout** | ~48,9s | ~5,4 GB | 1.024 tokens | ✅ Operacional |
 | **Agente 3 — Crítico Ácido** | ~62,0s | ~5,5 GB | 1.024 tokens | ✅ Operacional |
 | **Agente 4 — Sintetizador** | ~62,0s | ~5,5 GB | 1.024 tokens | ✅ Operacional |
-| **Execução Total do Pipeline** | **~219,7s** | **Máx. 5,5 GB** | **4.096 tokens (4 × 1.024)** | **Determinística & Estável** |
+| **Execução Total do Pipeline** | **~219,7s** | **Máx. 5,5 GB** | **4.096 tokens** | **Determinística & Estável** |
 
-> ⏱️ Os tempos acima correspondem à **linha de base v1.0.0** (medida com o cap de 256 tokens). A partir da **v1.0.1**, cada agente pode gerar até **1.024 tokens** (4.096 no pipeline completo) dentro de um **timeout de 240s por requisição**, garantindo respostas completas sem cortes. Para gráficos detalhados de utilização de recursos de hardware e especificações de ambiente, consulte [BASELINE.MD](./BASELINE.MD).
+> Esses valores refletem as medições documentadas em `BASELINE.MD`.
 
 ---
 
 ## 🚀 Executando Localmente
 
 ### 1. Pré-requisitos
-- Python 3.10+ (somente biblioteca padrão — **zero dependências de terceiros via `pip`**)
-- [Ollama](https://ollama.com/) instalado e rodando localmente com `qwen2.5:7b`:
-  ```bash
-  ollama pull qwen2.5:7b
-  ```
+
+- Python 3.10+
+- [Ollama](https://ollama.com/) instalado e rodando localmente com `qwen2.5:7b`
+
+```bash
+ollama pull qwen2.5:7b
+```
 
 ### 2. Execução
+
 Coloque seu arquivo de texto bruto dentro do diretório `bruto/` e execute:
 
 ```bash
-# Exemplo usando o arquivo de teste de front-end
 python orquestrador_claudio.py teste_frontend.txt
 ```
 
-O orquestrador executará os 4 agentes sequencialmente e salvará o relatório final em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+O orquestrador executa os 4 agentes sequencialmente e salva o relatório final em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+
+---
 
 ## 🐳 Executando via Docker
 
-O repositório inclui uma pilha oficial de Docker Compose (`Dockerfile` + `docker-compose.yml`) que executa o orquestrador **isolado em um container** enquanto acessa a **instância do Ollama rodando na máquina hospedeira** através de `host.docker.internal` (o `extra_hosts` já está configurado no Compose, incluindo hosts Linux). As pastas locais `./bruto`, `./agentes` e `./biblioteca` são montadas como volumes.
+O repositório inclui uma stack Docker Compose (`Dockerfile` + `docker-compose.yml`) que executa o orquestrador isolado enquanto acessa a instância do Ollama no host.
 
 ### 1. Pré-requisitos
-- [Docker](https://www.docker.com/) com Docker Compose v2
-- [Ollama](https://ollama.com/) rodando no host com `qwen2.5:7b` baixado:
 
-  ```bash
-  ollama pull qwen2.5:7b
-  ```
+- [Docker](https://www.docker.com/) com Docker Compose v2
+- Ollama rodando no host com `qwen2.5:7b` baixado
+
+```bash
+ollama pull qwen2.5:7b
+```
 
 ### 2. Execução
 
@@ -153,29 +162,34 @@ O repositório inclui uma pilha oficial de Docker Compose (`Dockerfile` + `docke
 docker compose run --rm claudio-project python orquestrador_claudio.py teste_frontend.txt
 ```
 
-Coloque seu arquivo `.txt` bruto dentro de `bruto/` e o relatório final é salvo diretamente em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` na sua máquina (através do volume montado).
+Coloque um arquivo `.txt` bruto dentro de `bruto/` e o relatório final é salvo diretamente em `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` na sua máquina via bind-mount.
+
+---
 
 ## 🌐 Módulo de Contexto Global
 
-Você pode injetar diretrizes globais de laboratório (ex.: restrições de arquitetura-alvo ou regras de orçamento) no Agente 1 criando um arquivo `contexto_global.txt` na raiz do diretório ou dentro de `agentes/`.
+Você pode injetar diretrizes globais de laboratório (por exemplo, restrições de arquitetura ou regras de orçamento) no Agente 1 criando um arquivo `contexto_global.txt` na raiz do diretório ou dentro de `agentes/`.
 
-- **Se detectado:** injetado automaticamente no prompt do Agente 1 (truncado graciosamente em 500 caracteres).
-- **Se ausente:** o sistema registra `ℹ️ Nenhum arquivo 'contexto_global.txt' detectado. Rodando em modo isolado.` e opera normalmente.
+- **Se detectado:** injetado automaticamente no prompt do Agente 1.
+- **Se ausente:** o sistema opera em modo isolado e registra o evento.
+
+---
 
 ## 📄 Licença
 
-Este projeto é software open-source licenciado sob a Licença MIT — consulte o arquivo LICENSE para detalhes.
+Este projeto é software open-source licenciado sob a **Licença MIT** — consulte [LICENSE](LICENSE) para detalhes.
 
-## 🏢 Contato Corporativo & Pesquisa
+---
 
-Rs4Machine — Laboratório de Pesquisa em IA & Sistemas Autônomos
+## 📬 Contato
 
-Fundador / Engenheiro Chefe: Raphael Mendes
+**Raphael Mendes**  
+**AI Systems Engineer & Founder · Rs4Machine**
 
-📧 python.dev.raphael@gmail.com
+- 📧 [python.dev.raphael@gmail.com](mailto:python.dev.raphael@gmail.com)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/raphaelmendes-dev/)
+- 🌐 [Portfolio](https://portfolio-modular-rs4-machine.vercel.app/)
 
-🔗 GitHub: github.com/raphaelmendes-dev
+---
 
-🏢 LinkedIn Empresa: Rs4Machine Lab
-
-RS4-cortex-flow v1.0.1 — Setembro de 2026
+*RS4-cortex-flow v1.0.1 — Setembro de 2026*

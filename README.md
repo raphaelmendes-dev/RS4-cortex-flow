@@ -1,16 +1,16 @@
 <div align="center">
 <img src="assets/Rs4Machine.png" alt="Rs4Machine Logo" width="380" />
 
-# 🧠 RS4-cortex-flow
+# 🧠 RS4-cortex-flow — Rs4Machine
 
-**Intellectual Augmentation & Multi-Agent Refinement Orchestrator v1.0.1**
+**Local multi-agent orchestration pipeline for structured knowledge refinement**
 
-A 100% local, zero-cost deterministic multi-agent pipeline that transforms raw human thoughts into structured decision-making briefs.
+A deterministic, fully local workflow for transforming raw human thought into structured decision briefs and organized knowledge outputs, with strict control over context, runtime, and auditability.
 
 [![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github)](https://github.com/raphaelmendes-dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org)
-[![Ollama](https://img.shields.io/badge/Ollama-Qwen2.5%3A7b-black.svg?style=for-the-badge)](https://ollama.com)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black.svg?style=for-the-badge)](https://ollama.com)
 [![Baseline Metrics](https://img.shields.io/badge/📊-Baseline%20Report-informational?style=for-the-badge)](BASELINE.MD)
 
 **🇺🇸 English (this file)** · [🇧🇷 Português do Brasil](README.pt-BR.md)
@@ -27,82 +27,86 @@ A 100% local, zero-cost deterministic multi-agent pipeline that transforms raw h
 - [Project Directory Structure](#-project-directory-structure)
 - [Empirical Performance & Baseline](#-empirical-performance--baseline)
 - [Running Locally](#-running-locally)
-- [🐳 Running via Docker](#-running-via-docker)
+- [Running via Docker](#-running-via-docker)
 - [Global Context Module](#-global-context-module)
 - [License](#-license)
-- [Corporate & Research Contact](#-corporate--research-contact)
+- [Contact](#-contact)
 
 ---
 
 ## 🎯 Overview
 
-**RS4-cortex-flow (v1.0.1)** — formerly the **Claudio Project** — is an offline intellectual augmentation engine built under the **RS4 Lab** experiment framework (*Experiment-005*). Designed to eliminate cognitive fatigue and premature complexity, it ingests unstructured "raw thoughts" and passes them through a deterministic 4-stage local AI reasoning chain powered by Ollama (`qwen2.5:7b`).
+**RS4-cortex-flow** is a local multi-agent orchestration project developed by **Rs4Machine** under the **RS4 Lab** experimental framework. It converts raw human input into structured operational artifacts using controlled, sequential agent execution and explicit runtime guardrails.
 
-The system produces standardized Markdown reports enriched with Front-Matter metadata, automatically categorized into dedicated operational fronts (`LAB`, `COMMERCE`, `FREELAS`, or `SISTEMAS`) for a personal knowledge library.
+The system is designed around repeatability, budget control, and human oversight. It is built to reduce noisy reasoning, constrain context windows, and keep outputs traceable.
+
+**Official positioning:** AI Systems Engineer focused on hybrid architectures (LLM + deterministic logic) to eliminate hallucinations and ensure auditability in production.
 
 ---
 
 ## ⚡ Key Engineering Principles
 
-- **100% Offline & $0.00 Cost:** Runs strictly locally via the Ollama REST API (`http://localhost:11434`, or `host.docker.internal` when using the Docker Compose image), guaranteeing data privacy and zero API bills.
-- **Deterministic Resource Protection:** Calls one agent at a time to prevent RAM/VRAM saturation on standard host hardware.
-- **Controlled Chunking & Anti-Looping:** Context capped at 1,500 characters and responses bounded to **1,024 max tokens** (`num_predict`) with a **240s (4 min) per-request HTTP timeout** so every agent delivers complete, uncut answers while keeping execution stable.
-- **Graceful Context Injection:** Dynamically integrates `contexto_global.txt` when present, or seamlessly defaults to isolated mode.
-- **Cross-Platform Console Resilience:** Standardized UTF-8 stdout re-configuration for legacy Windows terminals (cp1252).
+- **100% Local & Zero Cost** — Runs strictly on local infrastructure via the Ollama REST API, avoiding cloud dependency and protecting sensitive input.
+- **Deterministic Resource Protection** — One agent is invoked at a time to prevent RAM/VRAM saturation on standard host hardware.
+- **Controlled Chunking & Anti-Looping** — Context is capped and outputs are constrained to prevent runaway generation.
+- **Graceful Context Injection** — `contexto_global.txt` is injected when present, otherwise the system operates in isolated mode.
+- **Cross-Platform Console Resilience** — Standardized UTF-8 output handling for legacy Windows terminals.
 
 ---
 
 ## 🏗️ Multi-Agent Sequential Architecture
 
+```text
 [ Raw Thought Input (bruto/) ]
 │
 ▼
-[ AGENT 1: Structural Mapper ] ──> Deconstructs raw text into Facts, Hypotheses & Risks
+[ AGENT 1: Structural Mapper ] → Deconstructs raw text into Facts, Hypotheses & Risks
 │
 ▼
-[ AGENT 2: Tech Scout ]      ──> Evaluates 2026 local tech stacks & feasibility
+[ AGENT 2: Tech Scout ]      → Evaluates local tech stacks and feasibility
 │
 ▼
-[ AGENT 3: Acid Critic ]     ──> Identifies premature complexity & logical fallacies
+[ AGENT 3: Acid Critic ]     → Identifies premature complexity and logical fallacies
 │
 ▼
-[ AGENT 4: Synthesizer ]    ──> Generates YAML Front-Matter & "Smallest Next Step"
+[ AGENT 4: Synthesizer ]      → Generates YAML front matter and a small next step
 │
 ▼
 [ Structured Knowledge Base (biblioteca/Refinado_YYYYMMDD_HHMMSS.md) ]
-
+```
 
 ---
 
 ## 📂 Project Directory Structure
 
+```text
 RS4-cortex-flow/
-├── bruto/                      → Input folder for raw thought files (.txt)
-│   ├── teste_frontend.txt      → Sample UI/UX input
-│   └── teste_backend.txt       → Sample Architecture input
+├── bruto/                      → Raw thought inputs (.txt)
+│   ├── teste_frontend.txt
+│   └── teste_backend.txt
 ├── agentes/                    → System prompts for the 4 specialized agents
-│   ├── agente1_mapeador.txt    → Structural Mapper Prompt
-│   ├── agente2_techscout.txt   → Tech Scout Prompt
-│   ├── agente3_critico.txt     → Acid Critic Prompt
-│   └── agente4_sintetizador.txt → Final Synthesizer Prompt
-├── biblioteca/                 → Knowledge Base output folder
-│   └── README.md               → Library documentation
+│   ├── agente1_mapeador.txt
+│   ├── agente2_techscout.txt
+│   ├── agente3_critico.txt
+│   └── agente4_sintetizador.txt
+├── biblioteca/                 → Output knowledge base
+│   └── README.md
 ├── logs/                       → Local execution logs (git-ignored)
-├── assets/                     → Project visual assets & benchmark proofs
-├── orquestrador_claudio.py     → Core Python Orchestrator script
-├── Dockerfile                  → Lightweight `python:3.10-slim` Orchestrator image
-├── docker-compose.yml          → Docker Compose service (volumes + host Ollama access)
-├── BASELINE.MD                 → Measured execution times, RAM footprint & CPU benchmarks
-├── LICENSE                     → MIT License file
-├── .gitignore                  → Strict security & hygiene rules
+├── assets/                     → Project visuals and benchmark proofs
+├── orquestrador_claudio.py     → Core orchestrator script
+├── Dockerfile                  → Lightweight Python orchestrator image
+├── docker-compose.yml          → Docker Compose stack for host Ollama access
+├── BASELINE.MD                 → Runtime, RAM, and CPU baseline metrics
+├── LICENSE                     → MIT license
+├── .gitignore                  → Security and hygiene rules
 └── README.md                   → Main documentation
-
+```
 
 ---
 
 ## 📊 Empirical Performance & Baseline
 
-Tested on local CPU architecture running Ollama with `qwen2.5:7b`:
+Measured on a local CPU architecture with Ollama + `qwen2.5:7b`:
 
 | Stage / Agent | Avg Response Time | RAM Footprint | Output Token Cap | Status |
 |---|---|---|---|---|
@@ -110,42 +114,47 @@ Tested on local CPU architecture running Ollama with `qwen2.5:7b`:
 | **Agent 2 — Tech Scout** | ~48.9s | ~5.4 GB | 1,024 tokens | ✅ Operational |
 | **Agent 3 — Acid Critic** | ~62.0s | ~5.5 GB | 1,024 tokens | ✅ Operational |
 | **Agent 4 — Synthesizer** | ~62.0s | ~5.5 GB | 1,024 tokens | ✅ Operational |
-| **Total Pipeline Run** | **~219.7s** | **Max 5.5 GB** | **4,096 tokens (4 × 1,024)** | **Deterministic & Stable** |
+| **Total Pipeline Run** | **~219.7s** | **Max 5.5 GB** | **4,096 tokens** | **Deterministic & Stable** |
 
-> ⏱️ Response times above are the **v1.0.0 baseline** (measured with the 256-token cap). Starting at **v1.0.1**, each agent can generate up to **1,024 tokens** (4,096 across the pipeline) within a **240s per-request timeout**, guaranteeing complete, uncut answers. For detailed hardware resource utilization graphs and environment specifications, check [BASELINE.MD](./BASELINE.MD).
+> These values reflect the baseline measurements documented in `BASELINE.MD`.
 
 ---
 
 ## 🚀 Running Locally
 
 ### 1. Prerequisites
-- Python 3.10+ (Standard library only — **zero `pip` third-party dependencies**)
-- [Ollama](https://ollama.com/) installed and running locally with `qwen2.5:7b`:
-  ```bash
-  ollama pull qwen2.5:7b
-  ```
 
-### 2. Execution
-Place your raw text input file inside the `bruto/` directory and execute:
+- Python 3.10+
+- [Ollama](https://ollama.com/) installed and running locally with `qwen2.5:7b`
 
 ```bash
-# Example using the sample front-end test file
+ollama pull qwen2.5:7b
+```
+
+### 2. Execution
+
+Place your raw text file inside the `bruto/` directory and run:
+
+```bash
 python orquestrador_claudio.py teste_frontend.txt
 ```
 
-The orchestrator will execute the 4 agents sequentially and save the final report inside `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+The orchestrator runs the 4 agents sequentially and saves the final report in `biblioteca/Refinado_YYYYMMDD_HHMMSS.md`.
+
+---
 
 ## 🐳 Running via Docker
 
-The repository ships with an official Docker Compose stack (`Dockerfile` + `docker-compose.yml`) that runs the orchestrator **isolated in a container** while reaching the **Ollama instance running on your host machine** through `host.docker.internal` (`extra_hosts` is configured in the Compose file for Linux hosts). The local folders `./bruto`, `./agentes` and `./biblioteca` are bind-mounted as volumes.
+The repository includes a Docker Compose stack (`Dockerfile` + `docker-compose.yml`) that runs the orchestrator in isolation while reaching the Ollama instance on the host.
 
 ### 1. Prerequisites
-- [Docker](https://www.docker.com/) with Docker Compose v2
-- [Ollama](https://ollama.com/) running on the host with `qwen2.5:7b` downloaded:
 
-  ```bash
-  ollama pull qwen2.5:7b
-  ```
+- [Docker](https://www.docker.com/) with Docker Compose v2
+- Ollama running on the host with `qwen2.5:7b` downloaded
+
+```bash
+ollama pull qwen2.5:7b
+```
 
 ### 2. Execution
 
@@ -153,29 +162,34 @@ The repository ships with an official Docker Compose stack (`Dockerfile` + `dock
 docker compose run --rm claudio-project python orquestrador_claudio.py teste_frontend.txt
 ```
 
-Place your raw `.txt` input inside `bruto/` and the final report is saved directly to `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` on your machine (through the bind-mounted volume).
+Place a raw `.txt` file inside `bruto/` and the final report is saved directly to `biblioteca/Refinado_YYYYMMDD_HHMMSS.md` on your machine via bind-mount.
+
+---
 
 ## 🌐 Global Context Module
 
-You can inject global laboratory guidelines (e.g., target architecture constraints or budget rules) into Agent 1 by creating a `contexto_global.txt` file in the root directory or inside `agentes/`.
+You can inject global laboratory guidance (for example, architecture constraints or budget rules) into Agent 1 by creating a `contexto_global.txt` file in the root directory or inside `agentes/`.
 
-- **If detected:** Automatically injected into Agent 1 prompt (truncated gracefully at 500 characters).
-- **If absent:** System logs `ℹ️ Nenhum arquivo 'contexto_global.txt' detectado. Rodando em modo isolado.` and operates normally.
+- **If detected:** Automatically injected into Agent 1 prompt.
+- **If absent:** The system runs in isolated mode and logs the event.
+
+---
 
 ## 📄 License
 
-This project is open-source software licensed under the MIT License — see the LICENSE file for details.
+This project is open-source software licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 
-## 🏢 Corporate & Research Contact
+---
 
-Rs4Machine — AI Research Lab & Autonomous Systems
+## 📬 Contact
 
-Founder / Lead Engineer: Raphael Mendes
+**Raphael Mendes**  
+**AI Systems Engineer & Founder · Rs4Machine**
 
-📧 python.dev.raphael@gmail.com
+- 📧 [python.dev.raphael@gmail.com](mailto:python.dev.raphael@gmail.com)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/raphaelmendes-dev/)
+- 🌐 [Portfolio](https://portfolio-modular-rs4-machine.vercel.app/)
 
-🔗 GitHub: github.com/raphaelmendes-dev
+---
 
-🏢 LinkedIn Company: RS4Machine Lab
-
-RS4-cortex-flow v1.0.1 — September 2026
+*RS4-cortex-flow v1.0.1 — September 2026*
