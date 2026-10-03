@@ -21,6 +21,9 @@ services:
       - ./bruto:/app/bruto
       - ./agentes:/app/agentes
       - ./biblioteca:/app/biblioteca
+      # Metrics/ acumula os relatórios holísticos (CEO RS4) gravados em cada
+      # execução do orquestrador e do runner de testes medidos.
+      - ./Metrics:/app/Metrics
     environment:
       # host.docker.internal = endereço da máquina hospedeira dentro do container.
       - OLLAMA_URL=http://host.docker.internal:11434/api/generate

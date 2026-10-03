@@ -9,9 +9,12 @@ FROM python:3.10-slim
 # Sem `pip install`: o orquestrador usa somente a biblioteca padrão.
 WORKDIR /app
 
-# Copia apenas o orquestrador. As pastas bruto/, agentes/ e biblioteca/ são
-# montadas como volumes via docker-compose.yml (não entram na imagem).
+# Copia o orquestrador e o runner de testes medidos. As pastas bruto/, agentes/
+# e biblioteca/ são montadas como volumes via docker-compose.yml (não entram na
+# imagem). A pasta Metrics/ também é gravada no host e deve ser montada/consultada
+# localmente ou copiada via `docker compose cp`.
 COPY orquestrador_claudio.py /app/orquestrador_claudio.py
+COPY teste_backend_medido.py /app/teste_backend_medido.py
 
 # Segurança: executa como usuário sem privilégios.
 RUN useradd --create-home --uid 1000 claudio \

@@ -1,22 +1,38 @@
-# Python / Bytecode / Cache
+# Python / Compiladores / Caches
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Isolamento da Biblioteca Privada e Ideias Brutas Locais
-# Mantém apenas os arquivos de teste genéricos
+# Banco Vetorial Local (ChromaDB) e Bancos SQLite
+chroma_db_data/
+*.db
+data/db/*.db
+
+# Telemetria Local e Métricas de Execução (Migradas para o RS4-Lab)
+Metrics/
+logs/
+downloads/
+
+# Artefatos Locais de Saída / Mesa de Trabalho HITL
+drafts/
+
+# Arquivos de Filosofia Semente e Ideias Brutas Locais
+filosofia_rs4.txt
+filosofia.txt
+contexto_global.txt
 bruto/*
 !bruto/teste_frontend.txt
 !bruto/teste_backend.txt
 
+# Biblioteca Privada de Sínteses (somente README e artefato de teste versionados)
 biblioteca/*
 !biblioteca/README.md
 !biblioteca/Refinado_20260914_192107.md
 
-# Logs e arquivos de sistema/IDE
-logs/*.log
+# Configurações de Ambiente, Chaves e IDE
+.env
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
-contexto_global.txt

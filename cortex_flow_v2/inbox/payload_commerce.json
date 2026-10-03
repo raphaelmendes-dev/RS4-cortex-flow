@@ -1,0 +1,38 @@
+{
+  "origem": "commerce",
+  "versao": 1,
+  "gerado_em": "2026-10-01 00:00:00",
+  "descricao": "Fila de oportunidades do Commerce aguardando processamento no Cortex-Flow V2 (Fase 3 — Item 11).",
+  "oportunidades": [
+    {
+      "id": "COM-2026-001",
+      "status": "PENDENTE",
+      "frente": "COMMERCE",
+      "tipo": "COPY_OFFER",
+      "titulo": "Campanha de e-mail marketing para a oferta anual",
+      "descricao": "Ideia: campanha de e-mail marketing para lançar uma oferta de assinatura anual da plataforma de micro-saúde laboratorial a R$ 99,00, com copywriting persuasivo, landing page e call to action. Objetivo: converter leads em assinantes com promoção.",
+      "canal": "email_marketing",
+      "prioridade": "ALTA"
+    },
+    {
+      "id": "COM-2026-002",
+      "status": "PENDENTE",
+      "frente": "FREELAS",
+      "tipo": "BUILDER_TEMPLATE",
+      "titulo": "Template de landing page para freela de portfólio",
+      "descricao": "Ideia: construir um template de landing page para um freela de portfólio de desenvolvedor, com código HTML/CSS/JS semântico, formulário de contato e deploy estático. Objetivo: entregar um template reutilizável e um MVP executável.",
+      "canal": "freelas",
+      "prioridade": "MEDIA"
+    },
+    {
+      "id": "COM-2026-003",
+      "status": "CONCLUIDA",
+      "frente": "COMMERCE",
+      "tipo": "COPY_OFFER",
+      "titulo": "Anúncio de stories para Instagram (já processado)",
+      "descricao": "Ideia: anúncio de stories promocionais para Instagram. Objetivo: tráfego para a loja.",
+      "canal": "instagram",
+      "prioridade": "BAIXA"
+    }
+  ]
+}
